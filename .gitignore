@@ -1,0 +1,21 @@
+# Rapports générés
+reports/
+
+# Dépendances Node.js
+node_modules/
+
+# Fichiers temporaires
+*.log
+*.tmp
+
+# Fichiers système Windows
+Thumbs.db
+Desktop.ini
+
+# Fichiers d'environnement locaux
+.env
+.env.*
+
+# Fichiers IDE
+.vscode/
+.idea/
