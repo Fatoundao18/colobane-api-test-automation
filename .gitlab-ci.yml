@@ -1,0 +1,46 @@
+stages:
+  - validate
+  - test
+  - report
+
+variables:
+  COLLECTION: "postman/collections/colobane-api-tests.json"
+  ENVIRONMENT: "postman/environments/Colobane Environment.postman_environment.json"
+  REPORT_DIR: "reports"
+
+validate:
+  stage: validate
+  image: node:20
+  script:
+    - echo "Vérification de la structure du projet..."
+    - test -f "$COLLECTION"
+    - test -f "$ENVIRONMENT"
+    - echo "Fichiers nécessaires présents."
+
+test:
+  stage: test
+  image: node:20
+  before_script:
+    - npm install -g newman
+    - npm install -g newman-reporter-htmlextra
+  script:
+    - mkdir -p "$REPORT_DIR"
+    - newman run "$COLLECTION" -e "$ENVIRONMENT" --reporters cli,htmlextra --reporter-htmlextra-export "$REPORT_DIR/newman-report.html"
+  artifacts:
+    when: always
+    paths:
+      - reports/newman-report.html
+    expire_in: 30 minutes
+
+report:
+  stage: report
+  image: alpine:latest
+  script:
+    - echo "Rapport de tests disponible dans les artifacts GitLab."
+  dependencies:
+    - test
+  artifacts:
+    when: always
+    paths:
+      - reports/newman-report.html
+    expire_in: 30 minutes
